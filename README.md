@@ -169,9 +169,9 @@ This is a **prototype/MVP** built with mock data. For production use, you would 
 - Legal compliance and insurance considerations
 - Integration with emergency services APIs
 
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
+## Legal
+All rights reserved.  
+This repository is provided for viewing and evaluation purposes only.
 
 ## 👤 Author
 
