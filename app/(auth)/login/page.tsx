@@ -44,7 +44,7 @@ export default function LoginPage() {
             <div className="h-6 w-6 bg-teal-600 rounded-full" />
           </div>
           <CardTitle className="text-2xl font-bold text-slate-900">Welcome Back</CardTitle>
-          <CardDescription className="text-slate-500">Sign in to First Response</CardDescription>
+          <CardDescription className="text-slate-500">Sign in to Emergency Response & Aid</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-5">

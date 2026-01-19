@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertTriangle, MessageSquare, Phone, MapPin, Activity, Flame, HeartPulse, HelpCircle, X, ShieldCheck, PhoneCall } from "lucide-react"
+import { AlertTriangle, MessageSquare, Phone, MapPin, Activity, Flame, HeartPulse, HelpCircle, X, ShieldCheck, PhoneCall, CheckCircle } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { AIAssistant } from "@/components/AIAssistant"
 
@@ -23,8 +23,10 @@ type PageState = 'idle' | 'searching' | 'responder_found' | 'resolved'
 export default function RequesterPage() {
     const [status, setStatus] = useState<PageState>('idle')
     const [incidentType, setIncidentType] = useState<string | null>('Medical')
-    const { createRequest, requests, currentUser, users, signup } = useMockData()
+    const { createRequest, updateRequest, requests, currentUser, users, signup } = useMockData()
     const [guestName, setGuestName] = useState("")
+    const [trustedContact, setTrustedContact] = useState("")
+    const [showNotifyToast, setShowNotifyToast] = useState(false)
 
 
 
@@ -46,7 +48,7 @@ export default function RequesterPage() {
     }, [myRequest])
 
     const handleRequestHelp = () => {
-        createRequest(incidentType || 'General', 'Doncaster East', 'High')
+        createRequest(incidentType || 'Medical', 'Doncaster East', 'High')
         setStatus('searching')
     }
 
@@ -72,18 +74,32 @@ export default function RequesterPage() {
             <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex flex-col items-center justify-center p-4">
                 <Card className="w-full max-w-sm shadow-lg border-teal-100">
                     <CardHeader className="bg-teal-50 border-b border-teal-100 rounded-t-xl">
-                        <CardTitle className="text-teal-900">Welcome to First Aid</CardTitle>
-                        <CardDescription>Enter your name to request help immediately.</CardDescription>
+                        <CardTitle className="text-teal-900">Welcome to Emergency & Aid</CardTitle>
+                        <CardDescription>Enter your details to request help immediately.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4 pt-6">
-                        <Input
-                            placeholder="Your Name (e.g. John)"
-                            value={guestName}
-                            onChange={(e) => setGuestName(e.target.value)}
-                            className="text-lg py-6"
-                        />
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase">Your Name</label>
+                            <Input
+                                placeholder="e.g. John Doe"
+                                value={guestName}
+                                onChange={(e) => setGuestName(e.target.value)}
+                                className="text-lg"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold text-slate-500 uppercase flex justify-between">
+                                Trusted Contact <span className="text-teal-600 font-normal normal-case">(Optional: Auto-SMS)</span>
+                            </label>
+                            <Input
+                                placeholder="Mobile Number"
+                                value={trustedContact}
+                                onChange={(e) => setTrustedContact(e.target.value)}
+                                className="text-lg"
+                            />
+                        </div>
                         <Button
-                            className="w-full bg-teal-600 hover:bg-teal-700 h-12 text-lg font-bold"
+                            className="w-full bg-teal-600 hover:bg-teal-700 h-12 text-lg font-bold mt-2"
                             onClick={() => signup({ name: guestName, email: `guest-${Date.now()}@example.com`, password: '123', role: 'user' })}
                             disabled={!guestName.trim()}
                         >
@@ -99,28 +115,46 @@ export default function RequesterPage() {
     }
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex flex-col relative overflow-hidden">
+        <div className="min-h-[calc(100vh-4rem)] bg-slate-50 flex flex-col relative overflow-hidden transition-colors duration-1000 ease-in-out">
+
+            {/* Auto-Notify Toast */}
+            <AnimatePresence>
+                {showNotifyToast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed top-4 left-4 right-4 z-[100] bg-green-900/90 backdrop-blur text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3"
+                    >
+                        <div className="bg-green-500 rounded-full p-1"><CheckCircle className="h-4 w-4 text-white" /></div>
+                        <div>
+                            <p className="font-bold text-sm">Emergency Contact Notified</p>
+                            <p className="text-xs opacity-90">SMS sent to {trustedContact}</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* 1. Top Section - Context & Reassurance */}
-            <div className="bg-white border-b border-slate-100 p-4 shadow-sm z-20">
-                <div className="container max-w-md mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-700">
-                        <MapPin className="h-5 w-5 text-teal-600" />
+            <div className={`border-b p-4 shadow-sm z-20 transition-colors duration-1000 ${status === 'searching' ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-white border-slate-100'}`}>
+                <div className="container max-w-md md:max-w-6xl mx-auto flex items-center justify-between">
+                    <div className={`flex items-center gap-2 ${status === 'searching' ? 'text-slate-400' : 'text-slate-700'}`}>
+                        <MapPin className={`h-5 w-5 ${status === 'searching' ? 'text-teal-500' : 'text-teal-600'}`} />
                         <div>
-                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Current Location</p>
-                            <p className="font-semibold text-slate-900">Doncaster East, VIC</p>
+                            <p className="text-xs font-medium opacity-70 uppercase tracking-wider">Current Location</p>
+                            <p className={`font-semibold ${status === 'searching' ? 'text-slate-200' : 'text-slate-900'}`}>Doncaster East, VIC</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className={`h-2.5 w-2.5 rounded-full ${status === 'idle' ? 'bg-green-500' : 'bg-amber-500 animate-pulse'}`} />
-                        <span className="text-xs font-medium text-slate-600">
+                        <span className={`text-xs font-medium ${status === 'searching' ? 'text-slate-400' : 'text-slate-600'}`}>
                             {status === 'idle' ? 'Ready' : 'Active'}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <main className="flex-1 container max-w-md mx-auto p-4 flex flex-col relative z-10">
+            <main className={`flex-1 container max-w-md md:max-w-6xl mx-auto p-4 flex flex-col relative z-10 transition-colors duration-1000 ${status === 'searching' ? 'bg-slate-950' : ''}`}>
 
                 <AnimatePresence mode="wait">
 
@@ -131,7 +165,7 @@ export default function RequesterPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="flex-1 flex flex-col justify-center gap-8"
+                            className="flex-1 flex flex-col justify-center gap-8 md:max-w-md md:mx-auto w-full"
                         >
                             <div className="text-center space-y-2">
                                 <h2 className="text-2xl font-bold text-slate-900">Need First Aid?</h2>
@@ -191,136 +225,165 @@ export default function RequesterPage() {
                         </motion.div>
                     )}
 
-                    {/* SEARCHING STATE */}
+                    {/* SEARCHING STATE - "STAY CALM" MODE */}
                     {status === 'searching' && (
                         <motion.div
                             key="searching"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="flex-1 flex flex-col gap-6"
+                            className="flex-1 flex flex-col gap-8 py-8 md:grid md:grid-cols-2 md:items-center md:justify-items-center w-full"
                         >
-                            {/* Pulse Animation Card */}
-                            <Card className="bg-slate-900 text-white border-0 shadow-xl overflow-hidden relative">
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-teal-900/50 to-slate-900 z-0" />
-                                <CardContent className="p-8 flex flex-col items-center text-center relative z-10 min-h-[200px] justify-center">
-                                    <div className="relative">
-                                        <span className="absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-20 animate-ping"></span>
-                                        <div className="relative inline-flex rounded-full h-16 w-16 bg-teal-500/20 items-center justify-center border border-teal-500/50">
-                                            <Activity className="h-8 w-8 text-teal-400" />
-                                        </div>
+                            {/* Pulse Animation Card - Calmer */}
+                            <div className="flex flex-col items-center justify-center text-center space-y-8 w-full">
+                                <div className="relative">
+                                    <motion.div
+                                        animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} // Slower duration for calm
+                                        className="absolute inset-0 bg-teal-500 rounded-full blur-2xl"
+                                    />
+                                    <div className="relative z-10 h-32 w-32 rounded-full border-4 border-teal-500/30 flex items-center justify-center bg-slate-900 shadow-2xl">
+                                        <Activity className="h-12 w-12 text-teal-400" />
                                     </div>
-                                    <h3 className="text-xl font-bold mt-6 mb-2">Looking for nearby responders...</h3>
-                                    <p className="text-slate-400 text-sm">We have alerted 3 certified responders in your area.</p>
-                                </CardContent>
-                            </Card>
+                                </div>
 
-                            {/* Incident Type Selector */}
-                            <div className="space-y-4">
-                                <h4 className="font-semibold text-slate-700 ml-1">What happened? (Optional)</h4>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {[
-                                        { icon: HeartPulse, label: 'Chest Pain' },
-                                        { icon: Flame, label: 'Burns' },
-                                        { icon: AlertTriangle, label: 'Injury/Cut' },
-                                        { icon: HelpCircle, label: 'Not Sure' }
-                                    ].map((type) => (
-                                        <button
-                                            key={type.label}
-                                            onClick={() => setIncidentType(type.label)}
-                                            className={`p-4 rounded-xl border text-left transition-all flex items-center gap-3 ${incidentType === type.label
-                                                ? 'bg-teal-50 border-teal-500 ring-1 ring-teal-500'
-                                                : 'bg-white border-slate-200 hover:border-teal-200'
-                                                }`}
-                                        >
-                                            <div className={`p-2 rounded-full ${incidentType === type.label ? 'bg-teal-200 text-teal-800' : 'bg-slate-100 text-slate-600'}`}>
-                                                <type.icon className="h-5 w-5" />
-                                            </div>
-                                            <span className={`font-medium ${incidentType === type.label ? 'text-teal-900' : 'text-slate-700'}`}>
-                                                {type.label}
-                                            </span>
-                                        </button>
-                                    ))}
+                                <div className="space-y-4 max-w-xs mx-auto">
+                                    <h3 className="text-2xl font-light text-white tracking-wide">Help is being notified</h3>
+                                    <motion.p
+                                        animate={{ opacity: [0.5, 1, 0.5] }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                        className="text-teal-400 font-medium text-lg"
+                                    >
+                                        Take a slow, deep breath...
+                                    </motion.p>
+                                    <p className="text-slate-500 text-sm">We are connecting you with certified responders in Doncaster East.</p>
                                 </div>
                             </div>
 
-                            <div className="mt-auto">
-                                <Button variant="outline" onClick={handleCancel} className="w-full text-slate-500 hover:text-slate-700">
-                                    Cancel Request
-                                </Button>
+                            {/* Smart Templates */}
+                            <div className="space-y-4 z-20 w-full max-w-md">
+                                <h4 className="font-medium text-slate-400 text-center text-sm uppercase tracking-widest">Optional: Tap to speed up response</h4>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[
+                                        { icon: HeartPulse, label: 'Chest Pain', sub: 'Crushing feeling' },
+                                        { icon: Flame, label: 'Burns', sub: 'Fire or Chemical' },
+                                        { icon: AlertTriangle, label: 'Bleeding', sub: 'Deep cut/wound' },
+                                        { icon: HelpCircle, label: 'Breathing', sub: 'Shortness of breath' }
+                                    ].map((type) => (
+                                        <button
+                                            key={type.label}
+                                            onClick={() => {
+                                                setIncidentType(type.label)
+                                                if (myRequest) {
+                                                    updateRequest(myRequest.id, { type: type.label })
+                                                }
+                                            }}
+                                            className={`p-4 rounded-xl border text-left transition-all group relative overflow-hidden ${incidentType === type.label
+                                                ? 'bg-teal-900/40 border-teal-500/50 ring-1 ring-teal-500/50'
+                                                : 'bg-slate-900/50 border-slate-800 hover:border-slate-700 hover:bg-slate-800'
+                                                }`}
+                                        >
+                                            <div className="flex items-start gap-3 relative z-10">
+                                                <div className={`p-2 rounded-lg ${incidentType === type.label ? 'bg-teal-500 text-white' : 'bg-slate-800 text-slate-400 group-hover:text-slate-200'}`}>
+                                                    <type.icon className="h-5 w-5" />
+                                                </div>
+                                                <div>
+                                                    <span className={`block font-medium ${incidentType === type.label ? 'text-teal-400' : 'text-slate-300'}`}>
+                                                        {type.label}
+                                                    </span>
+                                                    <span className="text-xs text-slate-500 block mt-0.5">{type.sub}</span>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="mt-8">
+                                    <Button variant="ghost" onClick={handleCancel} className="w-full text-slate-600 hover:text-slate-400 hover:bg-white/5">
+                                        Cancel Request
+                                    </Button>
+                                </div>
                             </div>
                         </motion.div>
                     )}
 
                     {/* RESPONDER FOUND STATE */}
-                    {status === 'responder_found' && responder && (
-                        <motion.div
-                            key="found"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex-1 flex flex-col gap-4 h-full"
-                        >
-                            {/* Map takes up more space here */}
-                            <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-64 relative z-0">
-                                <Map className="h-full w-full" />
-                                <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-100 shadow-sm text-xs font-medium flex justify-between z-[400]">
-                                    <span>Your Location</span>
-                                    <span className="text-teal-600">Responder Location</span>
-                                </div>
+                    {status === 'responder_found' && (
+                        !responder ? (
+                            <div className="flex-1 flex flex-col items-center justify-center space-y-4 animate-pulse">
+                                <Activity className="h-12 w-12 text-teal-500" />
+                                <p className="text-slate-500 font-medium">Connecting to responder...</p>
                             </div>
+                        ) : (
+                            <motion.div
+                                key="found"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex-1 flex flex-col md:grid md:grid-cols-2 md:gap-8 h-full"
+                            >
+                                {/* Map takes up more space here */}
+                                <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-64 md:h-[600px] relative z-0">
+                                    <Map className="h-full w-full" />
+                                    <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-100 shadow-sm text-xs font-medium flex justify-between z-[400]">
+                                        <span>Your Location</span>
+                                        <span className="text-teal-600">Responder Location</span>
+                                    </div>
+                                </div>
 
-                            {/* Responder Info */}
-                            <Card className="bg-white border-teal-100 shadow-md">
-                                <CardContent className="p-5">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="flex gap-4">
-                                            <div className="h-14 w-14 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xl font-bold border-2 border-white shadow-sm">
-                                                {responder.name[0]}
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-                                                    {responder.name}
-                                                    {responder.verified && <ShieldCheck className="h-4 w-4 text-teal-500" />}
-                                                </h3>
-                                                <p className="text-sm text-slate-500">Certified First Aider</p>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                                                        <Activity className="h-3 w-3" /> On the way
-                                                    </span>
-                                                    <span className="text-xs text-slate-400">• {responder.distance} away</span>
+                                {/* Responder Info */}
+                                <div className="flex flex-col gap-4">
+                                    <Card className="bg-white border-teal-100 shadow-md">
+                                        <CardContent className="p-5">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="flex gap-4">
+                                                    <div className="h-14 w-14 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xl font-bold border-2 border-white shadow-sm">
+                                                        {responder.name[0]}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+                                                            {responder.name}
+                                                            {responder.verified && <ShieldCheck className="h-4 w-4 text-teal-500" />}
+                                                        </h3>
+                                                        <p className="text-sm text-slate-500">Certified First Aider</p>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                                                                <Activity className="h-3 w-3" /> On the way
+                                                            </span>
+                                                            <span className="text-xs text-slate-400">• {responder.distance} away</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">ETA</p>
+                                                    <p className="text-2xl font-bold text-teal-600">{responder.eta}</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">ETA</p>
-                                            <p className="text-2xl font-bold text-teal-600">{responder.eta}</p>
-                                        </div>
-                                    </div>
 
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-teal-100">
-                                            <MessageSquare className="h-4 w-4 mr-2" /> Chat
-                                        </Button>
-                                        <Button variant="outline" className="border-teal-200 text-teal-700 hover:bg-teal-50">
-                                            <PhoneCall className="h-4 w-4 mr-2" /> Call
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-teal-100">
+                                                    <MessageSquare className="h-4 w-4 mr-2" /> Chat
+                                                </Button>
+                                                <Button variant="outline" className="border-teal-200 text-teal-700 hover:bg-teal-50">
+                                                    <PhoneCall className="h-4 w-4 mr-2" /> Call
+                                                </Button>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
 
-                            {/* Escalation / Safety */}
-                            <Alert variant="destructive" className="bg-red-50 border-red-100">
-                                <AlertTriangle className="h-4 w-4" />
-                                <AlertTitle>Emergency Escalation</AlertTitle>
-                                <AlertDescription className="text-xs">
-                                    If the situation worsens, do not wait. <span className="underline font-bold pointer cursor-pointer">Call 000 immediately.</span>
-                                </AlertDescription>
-                            </Alert>
+                                    {/* Escalation / Safety */}
+                                    <Alert variant="destructive" className="bg-red-50 border-red-100">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        <AlertTitle>Emergency Escalation</AlertTitle>
+                                        <AlertDescription className="text-xs">
+                                            If the situation worsens, do not wait. <span className="underline font-bold pointer cursor-pointer">Call 000 immediately.</span>
+                                        </AlertDescription>
+                                    </Alert>
 
-                            <Button variant="ghost" size="sm" onClick={handleResolve} className="mt-auto text-slate-400 hover:text-slate-600">
-                                End Mock Scenario
-                            </Button>
-                        </motion.div>
+                                    <Button variant="ghost" size="sm" onClick={handleResolve} className="mt-auto text-slate-400 hover:text-slate-600">
+                                        End Mock Scenario
+                                    </Button>
+                                </div>
+                            </motion.div>
+                        )
                     )}
 
                     {/* RESOLVED STATE */}

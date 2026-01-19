@@ -1,0 +1,20 @@
+[
+  {
+    "id": "q63biai6y",
+    "adminId": "admin-1",
+    "adminName": "Admin User",
+    "action": "VERIFY",
+    "details": "Verified responder: Jhon Ahmed",
+    "targetId": "yhzdc5e2g",
+    "timestamp": 1768831428506
+  },
+  {
+    "id": "axbbgofbh",
+    "adminId": "admin-1",
+    "adminName": "Admin User",
+    "action": "DELETE",
+    "details": "Deleted user: Jhon Amir (user)",
+    "targetId": "nfcmup6db",
+    "timestamp": 1768830226298
+  }
+]

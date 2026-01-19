@@ -1,0 +1,41 @@
+[
+  {
+    "id": "admin-1",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "password": "password",
+    "role": "admin"
+  },
+  {
+    "name": "Melina Thomas",
+    "email": "melina@gmail.com",
+    "password": "testing2025",
+    "role": "user",
+    "verified": false,
+    "id": "r3wybo4ei"
+  },
+  {
+    "name": "Jhon Amir",
+    "email": "jhonamir@gmail.com",
+    "password": "testing2025",
+    "role": "responder",
+    "verified": true,
+    "id": "cigjfrxdm"
+  },
+  {
+    "name": "Jerry Joy",
+    "email": "joy_Jerry@gmail.com",
+    "password": "testing2025",
+    "role": "user",
+    "verified": false,
+    "id": "te4do6g2r"
+  },
+  {
+    "name": "Jhon Ahmed",
+    "email": "jhonahmed@gmail.com",
+    "password": "testing2025",
+    "role": "responder",
+    "verified": true,
+    "id": "yhzdc5e2g"
+  }
+]

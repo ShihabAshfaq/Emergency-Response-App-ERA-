@@ -22,19 +22,38 @@ export interface Request {
     location: string
     severity: string
     timestamp: number
+    outcome?: string
+    emotionalStatus?: string
+}
+
+// ... (skipping unchanged parts)
+
+
+
+export interface AdminLog {
+    id: string
+    adminId: string
+    adminName: string
+    action: string
+    details: string
+    targetId?: string
+    timestamp: number
 }
 
 interface MockDataContextType {
     users: User[]
     currentUser: User | null
     requests: Request[]
+    adminLogs: AdminLog[]
     signup: (user: Omit<User, 'id'>) => Promise<boolean>
     login: (email: string, password: string) => Promise<User | null>
     logout: () => void
     verifyResponder: (id: string) => void
+    deleteUser: (id: string) => void
     createRequest: (type: string, location: string, severity: string) => void
     acceptRequest: (requestId: string, responderId: string) => void
-    resolveRequest: (requestId: string) => void
+    resolveRequest: (requestId: string, outcome?: string, emotionalStatus?: string) => void
+    updateRequest: (requestId: string, updates: Partial<Request>) => void
 }
 
 const MockDataContext = createContext<MockDataContextType | undefined>(undefined)
@@ -52,29 +71,30 @@ export function MockDataProvider({ children }: { children: React.ReactNode }) {
     const [users, setUsers] = useState<User[]>([DEFAULT_ADMIN])
     const [currentUser, setCurrentUser] = useState<User | null>(null)
     const [requests, setRequests] = useState<Request[]>([])
+    const [adminLogs, setAdminLogs] = useState<AdminLog[]>([])
 
     // Load initial data
     useEffect(() => {
-        const storedUsers = localStorage.getItem('mock_users')
-        if (storedUsers) setUsers(JSON.parse(storedUsers))
-        else localStorage.setItem('mock_users', JSON.stringify([DEFAULT_ADMIN]))
+        const fetchData = async () => {
+            try {
+                const [usersRes, requestsRes, logsRes] = await Promise.all([
+                    fetch('/api/mock/users'),
+                    fetch('/api/mock/requests'),
+                    fetch('/api/mock/admin/logs')
+                ])
+                if (usersRes.ok) setUsers(await usersRes.json())
+                if (requestsRes.ok) setRequests(await requestsRes.json())
+                if (logsRes.ok) setAdminLogs(await logsRes.json())
+            } catch (err) {
+                console.error("Failed to load mock data", err)
+            }
+        }
+        fetchData()
 
-        const storedRequests = localStorage.getItem('mock_requests')
-        if (storedRequests) setRequests(JSON.parse(storedRequests))
-
-        // Session Persistence (Tab specific)
+        // Session Persistence (Tab specific - keep using sessionStorage)
         const sessionUser = sessionStorage.getItem('mock_session_user')
         if (sessionUser) setCurrentUser(JSON.parse(sessionUser))
     }, [])
-
-    // Sync state changes to localStorage
-    useEffect(() => {
-        localStorage.setItem('mock_users', JSON.stringify(users))
-    }, [users])
-
-    useEffect(() => {
-        localStorage.setItem('mock_requests', JSON.stringify(requests))
-    }, [requests])
 
     useEffect(() => {
         if (currentUser) {
@@ -84,83 +104,161 @@ export function MockDataProvider({ children }: { children: React.ReactNode }) {
         }
     }, [currentUser])
 
-    // Listen for changes from OTHER tabs + Polling
+    // Polling from API (Simulate real-time updates from other users)
     useEffect(() => {
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'mock_users' && e.newValue) {
-                setUsers(JSON.parse(e.newValue))
-            }
-            if (e.key === 'mock_requests' && e.newValue) {
-                setRequests(JSON.parse(e.newValue))
-            }
-        }
+        const pollInterval = setInterval(async () => {
+            try {
+                // Poll Requests
+                const requestsRes = await fetch('/api/mock/requests')
+                if (requestsRes.ok) {
+                    const latestRequests = await requestsRes.json()
+                    setRequests(prev => {
+                        if (JSON.stringify(prev) !== JSON.stringify(latestRequests)) {
+                            return latestRequests
+                        }
+                        return prev
+                    })
+                }
 
-        const pollInterval = setInterval(() => {
-            const storedRequests = localStorage.getItem('mock_requests')
-            if (storedRequests) {
-                const parsed = JSON.parse(storedRequests)
-                setRequests(prev => {
-                    if (JSON.stringify(prev) !== storedRequests) {
-                        return parsed
-                    }
-                    return prev
-                })
-            }
+                // Poll Users
+                const usersRes = await fetch('/api/mock/users')
+                if (usersRes.ok) {
+                    const latestUsers = await usersRes.json()
+                    setUsers(prev => {
+                        if (JSON.stringify(prev) !== JSON.stringify(latestUsers)) {
+                            return latestUsers
+                        }
+                        return prev
+                    })
+                }
 
-            // Also poll users to catch verification updates
-            const storedUsers = localStorage.getItem('mock_users')
-            if (storedUsers) {
-                const parsedUsers = JSON.parse(storedUsers)
-                setUsers(prev => {
-                    if (JSON.stringify(prev) !== storedUsers) {
-                        return parsedUsers
-                    }
-                    return prev
-                })
+                // Poll Logs
+                const logsRes = await fetch('/api/mock/admin/logs')
+                if (logsRes.ok) {
+                    const latestLogs = await logsRes.json()
+                    setAdminLogs(prev => {
+                        if (JSON.stringify(prev) !== JSON.stringify(latestLogs)) {
+                            return latestLogs
+                        }
+                        return prev
+                    })
+                }
+            } catch (err) {
+                // Ignore polling errors
             }
         }, 1000)
 
-        window.addEventListener('storage', handleStorageChange)
-        return () => {
-            window.removeEventListener('storage', handleStorageChange)
-            clearInterval(pollInterval)
-        }
+        return () => clearInterval(pollInterval)
     }, [])
 
     // Auto-update currentUser when users list changes (e.g. verified status update)
     useEffect(() => {
         if (currentUser) {
             const freshUser = users.find(u => u.id === currentUser.id)
-            if (freshUser && JSON.stringify(freshUser) !== JSON.stringify(currentUser)) {
-                setCurrentUser(freshUser)
+            if (freshUser) {
+                if (JSON.stringify(freshUser) !== JSON.stringify(currentUser)) {
+                    setCurrentUser(freshUser)
+                }
+            } else {
+                // User was deleted!
+                if (currentUser.role !== 'admin') {
+                    logout()
+                    alert("Your account has been removed by an administrator.")
+                }
             }
         }
     }, [users])
 
+    // HELPER: API Services
+    const updateUsers = async (newUsers: User[]) => {
+        setUsers(newUsers) // Optimistic update
+        await fetch('/api/mock/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newUsers)
+        })
+    }
+
+    const updateRequests = async (newRequests: Request[]) => {
+        setRequests(newRequests) // Optimistic update
+        await fetch('/api/mock/requests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newRequests)
+        })
+    }
+
+    const logAdminAction = async (action: string, details: string, targetId?: string) => {
+        if (!currentUser) return
+        const newLog = {
+            id: Math.random().toString(36).substr(2, 9),
+            adminId: currentUser.id,
+            adminName: currentUser.name,
+            action,
+            details,
+            targetId,
+            timestamp: Date.now()
+        }
+        setAdminLogs(prev => [newLog, ...prev])
+        await fetch('/api/mock/admin/logs', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newLog)
+        })
+    }
+
     const signup = async (userData: Omit<User, 'id'>) => {
         const newUser = { ...userData, id: Math.random().toString(36).substr(2, 9) }
-        setUsers(prev => [...prev, newUser])
+        const newUsers = [...users, newUser]
+        await updateUsers(newUsers)
         // Auto login after signup
         setCurrentUser(newUser)
         return true
     }
 
     const login = async (email: string, password: string) => {
-        const user = users.find(u => u.email === email && u.password === password)
-        if (user) {
-            setCurrentUser(user)
-            return user
+        // Fetch fresh data for login to ensure we have latest users
+        try {
+            const res = await fetch('/api/mock/users')
+            if (res.ok) {
+                const freshUsers = await res.json() as User[]
+                const user = freshUsers.find(u => u.email === email && u.password === password)
+                if (user) {
+                    setCurrentUser(user)
+                    setUsers(freshUsers) // Sync state while we're at it
+                    return user
+                }
+            }
+        } catch (e) {
+            console.error("Login fetch error", e)
         }
         return null
     }
 
     const logout = () => setCurrentUser(null)
 
-    const verifyResponder = (id: string) => {
-        setUsers(users.map(u => u.id === id ? { ...u, verified: true } : u))
+    const verifyResponder = async (id: string) => {
+        const targetUser = users.find(u => u.id === id)
+        const newUsers = users.map(u => u.id === id ? { ...u, verified: true } : u)
+        await updateUsers(newUsers)
+        if (targetUser) {
+            await logAdminAction('VERIFY', `Verified responder: ${targetUser.name}`, id)
+        }
     }
 
-    const createRequest = (type: string, location: string, severity: string) => {
+    const deleteUser = async (id: string) => {
+        const targetUser = users.find(u => u.id === id)
+
+        // Log FIRST before deleting, to ensure we have the user data
+        if (targetUser) {
+            await logAdminAction('DELETE', `Deleted user: ${targetUser.name} (${targetUser.role})`, id)
+        }
+
+        const newUsers = users.filter(u => u.id !== id)
+        await updateUsers(newUsers)
+    }
+
+    const createRequest = async (type: string, location: string, severity: string) => {
         if (!currentUser) {
             console.error("Attempted to create request without active user session")
             alert("Error: You must be logged in to request help. Please refresh or login again.")
@@ -175,15 +273,22 @@ export function MockDataProvider({ children }: { children: React.ReactNode }) {
             severity,
             timestamp: Date.now()
         }
-        setRequests(prev => [...prev, newRequest])
+        await updateRequests([...requests, newRequest])
     }
 
-    const acceptRequest = (requestId: string, responderId: string) => {
-        setRequests(requests.map(r => r.id === requestId ? { ...r, status: 'accepted', responderId } : r))
+    const acceptRequest = async (requestId: string, responderId: string) => {
+        const newRequests = requests.map(r => r.id === requestId ? { ...r, status: 'accepted' as const, responderId } : r)
+        await updateRequests(newRequests)
     }
 
-    const resolveRequest = (requestId: string) => {
-        setRequests(requests.map(r => r.id === requestId ? { ...r, status: 'resolved' } : r))
+    const updateRequest = async (requestId: string, updates: Partial<Request>) => {
+        const newRequests = requests.map(r => r.id === requestId ? { ...r, ...updates } : r)
+        await updateRequests(newRequests)
+    }
+
+    const resolveRequest = async (requestId: string, outcome?: string, emotionalStatus?: string) => {
+        const newRequests = requests.map(r => r.id === requestId ? { ...r, status: 'resolved' as const, outcome, emotionalStatus } : r)
+        await updateRequests(newRequests)
     }
 
     return (
@@ -191,13 +296,16 @@ export function MockDataProvider({ children }: { children: React.ReactNode }) {
             users,
             currentUser,
             requests,
+            adminLogs,
             signup,
             login,
             logout,
             verifyResponder,
+            deleteUser,
             createRequest,
             acceptRequest,
-            resolveRequest
+            resolveRequest,
+            updateRequest
         }}>
             {children}
         </MockDataContext.Provider>

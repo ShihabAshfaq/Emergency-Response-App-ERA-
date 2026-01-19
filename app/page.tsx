@@ -9,33 +9,7 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900">
 
-      {/* 3. Navigation (Pre-Login) */}
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md"
-      >
-        <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold text-teal-700 text-lg">
-            <ShieldAlert className="h-6 w-6" />
-            <span>First Response</span>
-          </Link>
-          <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
-            <Link href="#how-it-works" className="hover:text-teal-700 transition-colors">How It Works</Link>
-            <Link href="#safety" className="hover:text-teal-700 transition-colors">Safety</Link>
-            <Link href="/signup?role=responder" className="hover:text-teal-700 transition-colors">Become a Responder</Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm font-medium hover:text-teal-700 text-slate-600 hidden sm:block">Login</Link>
-            <Link href="/signup">
-              <Button className="bg-teal-700 hover:bg-teal-800 text-white rounded-full px-6">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </motion.header>
+
 
       <main className="flex-1">
 
@@ -289,21 +263,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="bg-slate-950 text-slate-400 py-12 text-sm">
-          <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2 font-semibold text-slate-200">
-              <ShieldAlert className="h-5 w-5" />
-              <span>First Response</span>
-            </div>
-            <div className="flex gap-8">
-              <Link href="#" className="hover:text-white">Privacy Policy</Link>
-              <Link href="#" className="hover:text-white">Terms of Service</Link>
-              <Link href="#" className="hover:text-white">Contact</Link>
-            </div>
-            <p>&copy; 2024 First Response App. All rights reserved.</p>
-          </div>
-        </footer>
+
       </main>
     </div>
   )

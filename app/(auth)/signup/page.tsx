@@ -33,7 +33,7 @@ export default function SignupPage() {
             <Card className="w-full max-w-md border-slate-200 shadow-xl shadow-slate-200/50">
                 <CardHeader className="text-center space-y-2 pb-6">
                     <CardTitle className="text-2xl font-bold text-slate-900">Create Account</CardTitle>
-                    <CardDescription className="text-slate-500">Join the First Response community</CardDescription>
+                    <CardDescription className="text-slate-500">Join the Emergency Response & Aid community</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSignup} className="space-y-5">
