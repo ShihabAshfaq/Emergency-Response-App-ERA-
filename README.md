@@ -41,6 +41,7 @@ A Next.js-based emergency response platform that connects users requesting first
 
 ### Technical Features
 - 🎨 **Modern UI**: Built with Tailwind CSS and Shadcn/ui components
+- 🌙 **Dark Mode**: Fully supported dark/light themes
 - ⚡ **Smooth Animations**: Framer Motion for engaging user experience
 - 🗺️ **Interactive Maps**: Leaflet integration for location visualization
 - 📱 **Responsive Design**: Works seamlessly on mobile and desktop
@@ -96,7 +97,9 @@ first-aid-response/
 │   │   ├── admin/       # Admin dashboard
 │   │   ├── requester/   # Help requester interface
 │   │   └── responder/   # First aid responder interface
-│   ├── layout.tsx       # Root layout with navigation
+│   ├── history/         # User history page
+│   ├── api/             # Mock API routes
+│   ├── layout.tsx       # Root layout with navigation and ThemeProvider
 │   ├── page.tsx         # Landing page
 │   └── globals.css      # Global styles
 ├── components/
@@ -105,6 +108,10 @@ first-aid-response/
 │   └── ui/              # Reusable UI components (Shadcn)
 ├── context/
 │   └── MockDataContext.tsx  # Mock data and state management
+├── data/                # Local JSON persistence (Mock DB)
+│   ├── admin_logs.json
+│   ├── requests.json
+│   └── users.json
 ├── lib/
 │   └── utils.ts         # Utility functions
 └── public/              # Static assets

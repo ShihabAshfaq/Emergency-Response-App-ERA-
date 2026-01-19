@@ -36,8 +36,8 @@ export function AIAssistant() {
                 return (
                     <div className="space-y-6">
                         <div>
-                            <h3 className="text-xl font-bold text-slate-900 mb-2">What seems to be the main issue?</h3>
-                            <p className="text-slate-500 text-sm">Select the best match.</p>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">What seems to be the main issue?</h3>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm">Select the best match.</p>
                         </div>
                         <div className="grid gap-3">
                             <OptionButton label="Unconscious / Not responding" onClick={() => goTo('CHECK_CONSCIOUS')} />
@@ -132,27 +132,27 @@ export function AIAssistant() {
     }
 
     return (
-        <div className="flex flex-col h-full max-h-[80vh]">
+        <div className="flex flex-col h-full max-h-[80vh] bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-teal-50 to-white border-b border-teal-100 p-4 shrink-0 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-teal-50 to-white dark:from-teal-900/40 dark:to-slate-900 border-b border-teal-100 dark:border-teal-900/50 p-4 shrink-0 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center border border-teal-200 shadow-sm">
-                        <Shield className="h-5 w-5 text-teal-700" />
+                    <div className="h-10 w-10 rounded-full bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center border border-teal-200 dark:border-teal-800 shadow-sm">
+                        <Shield className="h-5 w-5 text-teal-700 dark:text-teal-300" />
                     </div>
                     <div>
-                        <h2 className="font-bold text-slate-900 leading-tight">First Aid Assistant</h2>
-                        <p className="text-xs text-teal-700 font-medium">Calm guidance • Verified Protocols</p>
+                        <h2 className="font-bold text-slate-900 dark:text-white leading-tight">First Aid Assistant</h2>
+                        <p className="text-xs text-teal-700 dark:text-teal-400 font-medium">Calm guidance • Verified Protocols</p>
                     </div>
                 </div>
                 {step !== 'START' && step !== 'EMERGENCY_INTERRUPT' && (
-                    <Button variant="ghost" size="icon" onClick={restart} className="text-slate-400 hover:text-slate-600">
+                    <Button variant="ghost" size="icon" onClick={restart} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">
                         <RefreshCw className="h-4 w-4" />
                     </Button>
                 )}
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-white safe-bottom">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-white dark:bg-slate-900 safe-bottom">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={step}
@@ -176,10 +176,10 @@ function OptionButton({ label, onClick }: { label: string, onClick: () => void }
     return (
         <button
             onClick={onClick}
-            className="w-full text-left p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 hover:border-teal-300 transition-all font-semibold text-slate-700 flex items-center justify-between group shadow-sm"
+            className="w-full text-left p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-teal-300 dark:hover:border-teal-700 transition-all font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between group shadow-sm"
         >
             {label}
-            <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-teal-500" />
+            <ChevronRight className="h-5 w-5 text-slate-300 dark:text-slate-600 group-hover:text-teal-500 dark:group-hover:text-teal-400" />
         </button>
     )
 }
@@ -188,13 +188,13 @@ function QuestionScreen({ question, subtext, onYes, onNo, onNotSure }: { questio
     return (
         <div className="flex flex-col h-full justify-center space-y-8">
             <div className="text-center space-y-3">
-                <h3 className="text-2xl font-bold text-slate-900">{question}</h3>
-                {subtext && <p className="text-slate-500 text-lg leading-relaxed">{subtext}</p>}
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{question}</h3>
+                {subtext && <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">{subtext}</p>}
             </div>
             <div className="grid gap-3 max-w-sm mx-auto w-full">
                 <Button onClick={onYes} className="h-14 text-lg bg-teal-600 hover:bg-teal-700 text-white rounded-full">Yes</Button>
-                <Button onClick={onNo} variant="outline" className="h-14 text-lg border-teal-200 text-teal-800 hover:bg-teal-50 rounded-full">No</Button>
-                <Button onClick={onNotSure} variant="ghost" className="text-slate-500 hover:text-slate-700">Not Sure</Button>
+                <Button onClick={onNo} variant="outline" className="h-14 text-lg border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/30 rounded-full bg-transparent">No</Button>
+                <Button onClick={onNotSure} variant="ghost" className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">Not Sure</Button>
             </div>
         </div>
     )
@@ -203,17 +203,17 @@ function QuestionScreen({ question, subtext, onYes, onNo, onNotSure }: { questio
 function EmergencyScreen() {
     return (
         <div className="h-full flex flex-col justify-center items-center text-center space-y-6">
-            <div className="h-20 w-20 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
-                <AlertTriangle className="h-10 w-10 text-red-600" />
+            <div className="h-20 w-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center animate-pulse">
+                <AlertTriangle className="h-10 w-10 text-red-600 dark:text-red-500" />
             </div>
             <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-red-700">This requires emergency help.</h3>
-                <p className="text-slate-600 max-w-xs mx-auto">Based on your answers, you should call 000 immediately.</p>
+                <h3 className="text-2xl font-bold text-red-700 dark:text-red-400">This requires emergency help.</h3>
+                <p className="text-slate-600 dark:text-slate-300 max-w-xs mx-auto">Based on your answers, you should call 000 immediately.</p>
             </div>
-            <Button className="w-full max-w-sm h-16 text-xl font-bold bg-red-600 hover:bg-red-700 text-white shadow-xl shadow-red-200 rounded-xl flex items-center justify-center gap-3">
+            <Button className="w-full max-w-sm h-16 text-xl font-bold bg-red-600 hover:bg-red-700 text-white shadow-xl shadow-red-200 dark:shadow-none rounded-xl flex items-center justify-center gap-3">
                 <Phone className="h-6 w-6" /> Call 000 Now
             </Button>
-            <p className="text-xs text-slate-400">Cannot be dismissed for safety reasons.</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Cannot be dismissed for safety reasons.</p>
         </div>
     )
 }
@@ -222,20 +222,20 @@ function AdviceScreen({ title, steps, emergency = false }: { title: string, step
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-3 mb-2">
-                <div className={`p-2 rounded-full ${emergency ? 'bg-red-100' : 'bg-green-100'}`}>
-                    <CheckCircle className={`h-6 w-6 ${emergency ? 'text-red-600' : 'text-green-600'}`} />
+                <div className={`p-2 rounded-full ${emergency ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30'}`}>
+                    <CheckCircle className={`h-6 w-6 ${emergency ? 'text-red-600 dark:text-red-500' : 'text-green-600 dark:text-green-500'}`} />
                 </div>
-                <h3 className={`text-xl font-bold ${emergency ? 'text-red-700' : 'text-slate-800'}`}>{title}</h3>
+                <h3 className={`text-xl font-bold ${emergency ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}>{title}</h3>
             </div>
 
-            <Card className={`border ${emergency ? 'border-red-100 bg-red-50' : 'border-slate-100 bg-slate-50'}`}>
+            <Card className={`border ${emergency ? 'border-red-100 dark:border-red-900 bg-red-50 dark:bg-red-950/20' : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50'}`}>
                 <CardContent className="p-5 space-y-4">
                     {steps.map((step, i) => (
                         <div key={i} className="flex gap-4 items-start">
-                            <span className={`flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center text-sm font-bold ${emergency ? 'bg-red-200 text-red-800' : 'bg-white text-teal-700 border border-teal-200'}`}>
+                            <span className={`flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center text-sm font-bold ${emergency ? 'bg-red-200 dark:bg-red-900 text-red-800 dark:text-red-200' : 'bg-white dark:bg-slate-700 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800'}`}>
                                 {i + 1}
                             </span>
-                            <p className="text-slate-700 font-medium leading-relaxed">{step}</p>
+                            <p className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">{step}</p>
                         </div>
                     ))}
                 </CardContent>
