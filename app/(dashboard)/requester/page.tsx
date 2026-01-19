@@ -136,25 +136,25 @@ export default function RequesterPage() {
             </AnimatePresence>
 
             {/* 1. Top Section - Context & Reassurance */}
-            <div className={`border-b p-4 shadow-sm z-20 transition-colors duration-1000 ${status === 'searching' ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-white border-slate-100'}`}>
+            <div className={`border-b p-4 shadow-sm z-20 transition-colors duration-1000 ${status === 'searching' ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800'}`}>
                 <div className="container max-w-md md:max-w-6xl mx-auto flex items-center justify-between">
-                    <div className={`flex items-center gap-2 ${status === 'searching' ? 'text-slate-400' : 'text-slate-700'}`}>
-                        <MapPin className={`h-5 w-5 ${status === 'searching' ? 'text-teal-500' : 'text-teal-600'}`} />
+                    <div className={`flex items-center gap-2 ${status === 'searching' ? 'text-slate-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                        <MapPin className={`h-5 w-5 ${status === 'searching' ? 'text-teal-500' : 'text-teal-600 dark:text-teal-400'}`} />
                         <div>
                             <p className="text-xs font-medium opacity-70 uppercase tracking-wider">Current Location</p>
-                            <p className={`font-semibold ${status === 'searching' ? 'text-slate-200' : 'text-slate-900'}`}>Doncaster East, VIC</p>
+                            <p className={`font-semibold ${status === 'searching' ? 'text-slate-200' : 'text-slate-900 dark:text-white'}`}>Doncaster East, VIC</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className={`h-2.5 w-2.5 rounded-full ${status === 'idle' ? 'bg-green-500' : 'bg-amber-500 animate-pulse'}`} />
-                        <span className={`text-xs font-medium ${status === 'searching' ? 'text-slate-400' : 'text-slate-600'}`}>
+                        <span className={`text-xs font-medium ${status === 'searching' ? 'text-slate-400' : 'text-slate-600 dark:text-slate-400'}`}>
                             {status === 'idle' ? 'Ready' : 'Active'}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <main className={`flex-1 container max-w-md md:max-w-6xl mx-auto p-4 flex flex-col relative z-10 transition-colors duration-1000 ${status === 'searching' ? 'bg-slate-950' : ''}`}>
+            <main className={`flex-1 container max-w-md md:max-w-6xl mx-auto p-4 flex flex-col relative z-10 transition-colors duration-1000 ${status === 'searching' ? 'bg-slate-950' : 'bg-slate-50 dark:bg-slate-950'}`}>
 
                 <AnimatePresence mode="wait">
 
@@ -168,8 +168,8 @@ export default function RequesterPage() {
                             className="flex-1 flex flex-col justify-center gap-8 md:max-w-md md:mx-auto w-full"
                         >
                             <div className="text-center space-y-2">
-                                <h2 className="text-2xl font-bold text-slate-900">Need First Aid?</h2>
-                                <p className="text-slate-600">Tap below to alert nearby responders.</p>
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Need First Aid?</h2>
+                                <p className="text-slate-600 dark:text-slate-400">Tap below to alert nearby responders.</p>
                             </div>
 
                             {/* Primary Action */}
@@ -177,11 +177,11 @@ export default function RequesterPage() {
                                 <motion.div
                                     animate={{ scale: [1, 1.05, 1] }}
                                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                    className="absolute inset-0 bg-teal-100 rounded-full blur-xl opacity-50"
+                                    className="absolute inset-0 bg-teal-100 dark:bg-teal-900/40 rounded-full blur-xl opacity-50"
                                 />
                                 <Button
                                     onClick={handleRequestHelp}
-                                    className="relative h-48 w-48 rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-xl shadow-teal-200 border-4 border-teal-100 flex flex-col items-center justify-center gap-2"
+                                    className="relative h-48 w-48 rounded-full bg-teal-600 hover:bg-teal-700 text-white shadow-xl shadow-teal-200 dark:shadow-teal-900/20 border-4 border-teal-100 dark:border-teal-800 flex flex-col items-center justify-center gap-2"
                                 >
                                     <Activity className="h-10 w-10" />
                                     <span className="text-xl font-bold">REQUEST HELP</span>
@@ -189,23 +189,23 @@ export default function RequesterPage() {
                             </div>
 
                             {/* AI Preview */}
-                            <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
-                                <div className="bg-teal-50 p-3 border-b border-teal-100 flex justify-between items-center">
-                                    <div className="flex items-center gap-2 text-teal-800 font-medium">
+                            <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                                <div className="bg-teal-50 dark:bg-teal-900/30 p-3 border-b border-teal-100 dark:border-teal-800 flex justify-between items-center">
+                                    <div className="flex items-center gap-2 text-teal-800 dark:text-teal-300 font-medium">
                                         <MessageSquare className="h-4 w-4" />
                                         AI Guidance Preview
                                     </div>
-                                    <span className="text-xs text-teal-600 bg-white px-2 py-0.5 rounded-full border border-teal-100">24/7</span>
+                                    <span className="text-xs text-teal-600 dark:text-teal-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded-full border border-teal-100 dark:border-teal-700">24/7</span>
                                 </div>
                                 <div className="p-4 space-y-3">
-                                    <p className="text-sm text-slate-600">Not an emergency yet? Ask our AI assistant for advice.</p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">Not an emergency yet? Ask our AI assistant for advice.</p>
                                     <Sheet>
                                         <SheetTrigger asChild>
-                                            <Button variant="outline" size="sm" className="w-full border-teal-200 text-teal-700 hover:bg-teal-50">
+                                            <Button variant="outline" size="sm" className="w-full border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/30">
                                                 Open First Aid Chat
                                             </Button>
                                         </SheetTrigger>
-                                        <SheetContent side="bottom" className="h-[85vh] rounded-t-xl p-0 overflow-hidden">
+                                        <SheetContent side="bottom" className="h-[85vh] rounded-t-xl p-0 overflow-hidden bg-white dark:bg-slate-950 border-t-slate-200 dark:border-t-slate-800">
                                             <SheetHeader className="sr-only">
                                                 <SheetTitle>AI First Aid Assistant</SheetTitle>
                                             </SheetHeader>
@@ -217,7 +217,7 @@ export default function RequesterPage() {
 
                             {/* Emergency Shortcut */}
                             <div className="mt-auto pt-4">
-                                <Button variant="destructive" className="w-full bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 py-6 h-auto flex flex-col gap-1">
+                                <Button variant="destructive" className="w-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 hover:bg-red-100 dark:hover:bg-red-900/50 py-6 h-auto flex flex-col gap-1">
                                     <span className="flex items-center gap-2 font-bold text-lg"><Phone className="h-5 w-5" /> Call 000</span>
                                     <span className="text-xs font-normal opacity-80">For life-threatening emergencies only</span>
                                 </Button>
@@ -321,31 +321,31 @@ export default function RequesterPage() {
                                 className="flex-1 flex flex-col md:grid md:grid-cols-2 md:gap-8 h-full"
                             >
                                 {/* Map takes up more space here */}
-                                <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm h-64 md:h-[600px] relative z-0">
+                                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm h-64 md:h-[600px] relative z-0">
                                     <Map className="h-full w-full" />
-                                    <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur p-3 rounded-lg border border-slate-100 shadow-sm text-xs font-medium flex justify-between z-[400]">
+                                    <div className="absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur p-3 rounded-lg border border-slate-100 dark:border-slate-800 shadow-sm text-xs font-medium flex justify-between z-[400] text-slate-900 dark:text-slate-200">
                                         <span>Your Location</span>
-                                        <span className="text-teal-600">Responder Location</span>
+                                        <span className="text-teal-600 dark:text-teal-400">Responder Location</span>
                                     </div>
                                 </div>
 
                                 {/* Responder Info */}
                                 <div className="flex flex-col gap-4">
-                                    <Card className="bg-white border-teal-100 shadow-md">
+                                    <Card className="bg-white dark:bg-slate-900 border-teal-100 dark:border-teal-900 shadow-md">
                                         <CardContent className="p-5">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex gap-4">
-                                                    <div className="h-14 w-14 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xl font-bold border-2 border-white shadow-sm">
+                                                    <div className="h-14 w-14 rounded-full bg-teal-100 dark:bg-teal-900 text-teal-700 dark:text-teal-300 flex items-center justify-center text-xl font-bold border-2 border-white dark:border-slate-800 shadow-sm">
                                                         {responder.name[0]}
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+                                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                                                             {responder.name}
                                                             {responder.verified && <ShieldCheck className="h-4 w-4 text-teal-500" />}
                                                         </h3>
-                                                        <p className="text-sm text-slate-500">Certified First Aider</p>
+                                                        <p className="text-sm text-slate-500 dark:text-slate-400">Certified First Aider</p>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                                                            <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                                                                 <Activity className="h-3 w-3" /> On the way
                                                             </span>
                                                             <span className="text-xs text-slate-400">• {responder.distance} away</span>
@@ -353,16 +353,16 @@ export default function RequesterPage() {
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-xs text-slate-500 uppercase tracking-wide font-medium">ETA</p>
-                                                    <p className="text-2xl font-bold text-teal-600">{responder.eta}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide font-medium">ETA</p>
+                                                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{responder.eta}</p>
                                                 </div>
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-3">
-                                                <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-teal-100">
+                                                <Button className="bg-teal-600 hover:bg-teal-700 text-white shadow-teal-100 dark:shadow-none">
                                                     <MessageSquare className="h-4 w-4 mr-2" /> Chat
                                                 </Button>
-                                                <Button variant="outline" className="border-teal-200 text-teal-700 hover:bg-teal-50">
+                                                <Button variant="outline" className="border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/30">
                                                     <PhoneCall className="h-4 w-4 mr-2" /> Call
                                                 </Button>
                                             </div>
@@ -370,7 +370,7 @@ export default function RequesterPage() {
                                     </Card>
 
                                     {/* Escalation / Safety */}
-                                    <Alert variant="destructive" className="bg-red-50 border-red-100">
+                                    <Alert variant="destructive" className="bg-red-50 dark:bg-red-950/20 border-red-100 dark:border-red-900">
                                         <AlertTriangle className="h-4 w-4" />
                                         <AlertTitle>Emergency Escalation</AlertTitle>
                                         <AlertDescription className="text-xs">
@@ -378,7 +378,7 @@ export default function RequesterPage() {
                                         </AlertDescription>
                                     </Alert>
 
-                                    <Button variant="ghost" size="sm" onClick={handleResolve} className="mt-auto text-slate-400 hover:text-slate-600">
+                                    <Button variant="ghost" size="sm" onClick={handleResolve} className="mt-auto text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                                         End Mock Scenario
                                     </Button>
                                 </div>
@@ -394,13 +394,13 @@ export default function RequesterPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="flex-1 flex flex-col items-center justify-center text-center p-8"
                         >
-                            <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mb-6 text-green-600">
+                            <div className="h-20 w-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6 text-green-600 dark:text-green-400">
                                 <ShieldCheck className="h-10 w-10" />
                             </div>
-                            <h2 className="text-2xl font-bold text-slate-900 mb-2">Help Completed</h2>
-                            <p className="text-slate-600 mb-8 max-w-xs">The incident has been marked as resolved. We hope everyone is safe.</p>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Help Completed</h2>
+                            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-xs">The incident has been marked as resolved. We hope everyone is safe.</p>
 
-                            <Button onClick={handleCancel} className="w-full max-w-xs bg-slate-900 text-white">
+                            <Button onClick={handleCancel} className="w-full max-w-xs bg-slate-900 dark:bg-white text-white dark:text-slate-900">
                                 Return Home
                             </Button>
                         </motion.div>

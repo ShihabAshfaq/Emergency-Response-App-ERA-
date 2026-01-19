@@ -44,18 +44,18 @@ export function Navbar() {
 
     return (
         <header
-            className={`sticky top-0 z-50 w-full border-b transition-all duration-200 ${isScrolled || isDashboard ? "bg-white/80 backdrop-blur-md border-slate-200" : "bg-transparent border-transparent"
+            className={`sticky top-0 z-50 w-full border-b transition-all duration-200 ${isScrolled || isDashboard ? "bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-slate-200 dark:border-slate-800" : "bg-transparent border-transparent"
                 }`}
         >
             <div className="container flex h-16 items-center justify-between px-4 md:px-6 mx-auto">
                 <div className="flex items-center gap-6">
-                    <Link href="/" className="flex items-center gap-2 font-semibold text-teal-700 text-lg">
+                    <Link href="/" className="flex items-center gap-2 font-semibold text-teal-700 dark:text-teal-400 text-lg">
                         <ShieldAlert className="h-6 w-6" />
                         <span>Emergency Response & Aid</span>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600">
+                    <nav className="hidden md:flex gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
                         {isDashboard ? (
                             <>
                                 <Link href={dashboardLink} className={`hover:text-teal-700 transition-colors ${pathname === dashboardLink ? 'text-teal-700 font-bold' : ''}`}>
